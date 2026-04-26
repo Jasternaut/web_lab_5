@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Заказ доставки еды — Лаба 2</title>
+    <style>
+        /* штраф: плавное появление формы при загрузке */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+        }
+        body.loaded { opacity: 1; }
+
+        /* штраф: выравнивание по центру и стилизация */
+        .order-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 400px;
+            border: 1px solid #e0e0e0;
+        }
+
+        h2 { color: #2c3e50; text-align: center; margin-bottom: 20px; }
+
+        .field-group { margin-bottom: 15px; }
+
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #34495e; }
+
+        /* штраф: границы и фон для полей */
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input:focus { border-color: #3498db; }
+
+        /* штраф: подсветка полей при простое */
+        .highlight { border-color: #e74c3c !important; background-color: #fdf2f2; }
+
+        /* штраф: стили для кнопки и hover-эффект */
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        button:hover { background-color: #219150; }
+        button:active { transform: scale(0.98); }
+
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e8f6ef;
+            border-radius: 6px;
+            display: none; /* скрыт, пока не отправили */
+        }
+    </style>
+</head>
+<body onload="document.body.classList.add('loaded')">
+
+<div class="order-card">
+    <h2>🍕 Заказ еды</h2>
+    <form id="foodOrderForm" action="process.php" method="POST">
+        <div class="field-group">
+            <label>Ваше имя:</label>
+            <input type="text" name="customerName" placeholder="Иван Иванов" required>
+        </div>
+
+        <div class="field-group">
+            <label>Количество блюд:</label>
+            <input type="number" name="quantity" min="1" value="1" required>
+        </div>
+
+        <div class="field-group">
+            <label>Выберите ресторан:</label>
+            <select name="restaurant">
+                <option value="Додо Пицца">Додо Пицца</option>
+                <option value="Вкусно и точка">Макдоналдс</option>
+                <option value="Бургер Кинг">Бургер Кинг</option>
+            </select>
+        </div>
+
+        <div class="field-group">
+            <label>Тип упаковки:</label>
+            <label style="font-weight: normal;"><input type="radio" name="packaging" value="Стандартная" checked> Стандартная</label>
+            <label style="font-weight: normal;"><input type="radio" name="packaging" value="Эко-бокс"> Эко-бокс</label>
+        </div>
+
+        <div class="field-group">
+            <label style="font-weight: normal;">
+                <input type="checkbox" name="onlinePay"> Оплата онлайн
+            </label>
+        </div>
+
+        <button type="submit">Оформить заказ</button>
+    </form>
+
+    <div id="result"></div>
+</div>
+
+<script>
+    const form = document.getElementById('foodOrderForm');
+
+    form.addEventListener('submit', function(e) {
+        const name = this.customerName.value;
+        alert("Заказ оформляется на имя: " + name); 
+        // e.preventDefault() убран, чтобы форма улетела в process.php
+    });
+
+    let idleTime = 0;
+    const idleLimit = 15; 
+    const idleInterval = setInterval(() => {
+        idleTime++;
+        if (idleTime >= idleLimit) {
+            form.querySelectorAll('input[type="text"]').forEach(el => el.classList.add('highlight'));
+        }
+    }, 1000);
+
+    const resetTimer = () => {
+        idleTime = 0;
+        form.querySelectorAll('.highlight').forEach(el => el.classList.remove('highlight'));
+    };
+
+    ['mousemove', 'keypress', 'scroll', 'touchstart', 'input'].forEach(evt => {
+        window.addEventListener(evt, resetTimer);
+    });
+</script>
+
+</body>
+</html>
