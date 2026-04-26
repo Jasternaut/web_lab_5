@@ -1,0 +1,5 @@
+www/data.txt
+www/vendor/
+www/composer.lock
+www/composer.json
+www/api_cache.json
